@@ -13,6 +13,38 @@ type TermiiCredential = {
   baseUrl: string;
 };
 
+export type TermiiResponse =
+  | JsonObject
+  | JsonObject[]
+  | string
+  | number
+  | boolean;
+
+function buildUrlWithQueryString(url: string, qs: IDataObject): string {
+  const searchParams = new URLSearchParams();
+
+  Object.entries(qs).forEach(([key, value]) => {
+    if (value === undefined || value === null || value === "") {
+      return;
+    }
+
+    if (Array.isArray(value)) {
+      value.forEach((entry) => searchParams.append(key, String(entry)));
+      return;
+    }
+
+    searchParams.append(key, String(value));
+  });
+
+  const queryString = searchParams.toString();
+
+  if (!queryString) {
+    return url;
+  }
+
+  return `${url}${url.includes("?") ? "&" : "?"}${queryString}`;
+}
+
 /**
  * Make an API request to Termii.
  */
@@ -23,7 +55,7 @@ export async function termiiApiRequest(
   body: IDataObject = {},
   qs: IDataObject = {},
   option: IDataObject = {},
-): Promise<JsonObject> {
+): Promise<TermiiResponse> {
   const credentials = (await this.getCredentials(
     "termiiApi",
   )) as TermiiCredential;
@@ -45,30 +77,41 @@ export async function termiiApiRequest(
     requestBody.api_key = credentials.apiKey;
   }
 
+  const url = `${baseUrl}${endpoint}`;
   const options: IHttpRequestOptions = {
     method,
-    url: `${baseUrl}${endpoint}`,
-    body: requestBody,
-    qs: queryString,
-    headers: {
-      "Content-Type": "application/json",
-    },
+    url: method === "GET" ? buildUrlWithQueryString(url, queryString) : url,
     json: true,
   };
+
+  if (method !== "GET") {
+    options.body = requestBody;
+    options.headers = {
+      "Content-Type": "application/json",
+    };
+  }
 
   if (Object.keys(option).length !== 0) {
     Object.assign(options, option);
   }
 
-  if (Object.keys(requestBody).length === 0) {
+  if (options.body && Object.keys(requestBody).length === 0) {
     delete options.body;
   }
 
-  if (Object.keys(queryString).length === 0) {
-    delete options.qs;
+  const response = (await this.helpers.httpRequest.call(
+    this,
+    options,
+  )) as TermiiResponse;
+
+  if (response === "") {
+    throw new NodeOperationError(
+      this.getNode(),
+      `Termii returned an empty response for ${method} ${endpoint}. Check that the credential Base URL exactly matches the Base URL shown in your Termii dashboard, and that the API key belongs to that account.`,
+    );
   }
 
-  return (await this.helpers.httpRequest.call(this, options)) as JsonObject;
+  return response;
 }
 
 export function cleanObject(obj: IDataObject): IDataObject {
@@ -84,7 +127,7 @@ export function cleanObject(obj: IDataObject): IDataObject {
 }
 
 export function normalizeTermiiResponse(
-  response: JsonObject | JsonObject[] | string | number | boolean,
+  response: TermiiResponse,
 ): JsonObject | JsonObject[] {
   if (Array.isArray(response)) {
     return response;

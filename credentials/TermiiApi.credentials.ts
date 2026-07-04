@@ -16,10 +16,7 @@ export class TermiiApi implements ICredentialType {
   test: ICredentialTestRequest = {
     request: {
       baseURL: "={{$credentials.baseUrl}}",
-      url: "/api/get-balance",
-      qs: {
-        api_key: "={{$credentials.apiKey}}",
-      },
+      url: "=/api/get-balance?api_key={{$credentials.apiKey}}",
     },
   };
 

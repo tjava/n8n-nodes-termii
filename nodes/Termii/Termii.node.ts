@@ -13,6 +13,7 @@ import {
   cleanObject,
   normalizeTermiiResponse,
   termiiApiRequest,
+  TermiiResponse,
 } from "./GenericFunctions";
 
 type PhoneNumberEntry = {
@@ -528,7 +529,7 @@ export class Termii implements INodeType {
 
     for (let i = 0; i < items.length; i++) {
       try {
-        let responseData: JsonObject = {};
+        let responseData: TermiiResponse = {};
 
         if (resource === "message") {
           if (operation === "sendSms") {
