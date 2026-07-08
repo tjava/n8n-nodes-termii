@@ -1,6 +1,6 @@
 {
   "name": "n8n-nodes-termii",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "n8n community node for Termii SMS, OTP, balance, and sender ID operations",
   "keywords": [
     "n8n-community-node-package",
@@ -26,18 +26,18 @@
   },
   "main": "dist/nodes/Termii/Termii.node.js",
   "scripts": {
-    "build": "n8n-node build",
-    "dev": "n8n-node dev",
-    "lint": "n8n-node lint",
-    "lint:fix": "n8n-node lint --fix",
+    "build": "rimraf dist && tsc && npm run copy:assets",
+    "copy:assets": "node -e \"const fs=require('fs'); fs.mkdirSync('dist/credentials',{recursive:true}); fs.mkdirSync('dist/nodes/Termii',{recursive:true}); fs.copyFileSync('credentials/termii.svg','dist/credentials/termii.svg'); fs.copyFileSync('nodes/Termii/termii.svg','dist/nodes/Termii/termii.svg');\"",
+    "dev": "tsc --watch",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
     "lintfix": "npm run lint:fix",
-    "release": "n8n-node release",
+    "release": "npm publish --access public --provenance",
     "format": "prettier --write \"**/*.ts\""
   },
   "files": [
     "dist/**/*",
     "README.md",
-    "NOTES.md",
     "LICENSE"
   ],
   "n8n": {
@@ -50,17 +50,20 @@
     ]
   },
   "devDependencies": {
-    "@n8n/node-cli": "^0.30.1",
+    "@eslint/js": "^9.39.1",
+    "@n8n/eslint-plugin-community-nodes": "^0.15.0",
     "@types/node": "^18.16.0",
     "eslint": "^9.39.1",
+    "eslint-import-resolver-typescript": "^4.4.3",
+    "eslint-plugin-import-x": "^4.15.2",
+    "eslint-plugin-n8n-nodes-base": "^1.16.7",
     "n8n-workflow": "^2.16.0",
     "prettier": "^3.3.0",
+    "rimraf": "^6.0.1",
+    "typescript-eslint": "^8.35.0",
     "typescript": "^5.5.0"
   },
   "peerDependencies": {
     "n8n-workflow": "*"
-  },
-  "overrides": {
-    "change-case": "4.1.2"
   }
 }

@@ -118,8 +118,6 @@ Endpoint and request-field decisions are based on Termii's official documentatio
 - [Sender ID API](https://developers.termii.com/sender-id)
 - Termii's official Postman collection linked from the documentation introduction
 
-See [NOTES.md](NOTES.md) for endpoint mapping and documented uncertainties.
-
 ## Disclaimer
 
 This is a community node package for n8n. It is not an official Termii product unless Termii later approves or adopts it.
