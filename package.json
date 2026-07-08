@@ -1,6 +1,6 @@
 {
   "name": "n8n-nodes-termii",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "n8n community node for Termii SMS, OTP, balance, and sender ID operations",
   "keywords": [
     "n8n-community-node-package",
@@ -19,6 +19,10 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/tjava/n8n-nodes-termii.git"
+  },
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
   },
   "main": "dist/nodes/Termii/Termii.node.js",
   "scripts": {
